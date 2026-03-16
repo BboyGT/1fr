@@ -4,16 +4,16 @@ Companion demo project for the CSS-Tricks article by [Godstime Aburu](https://gi
 
 ## What This Is
 
-Four interactive demos that isolate the `1fr` minimum sizing bug in CSS Grid — showing exactly how it breaks, what causes it, and how to fix it.
+Four interactive demos that isolate the `1fr` minimum sizing bug in CSS Grid showing exactly how it breaks, what causes it, and how to fix it.
 
 ## Demos
 
 | Demo | What It Shows |
 |------|--------------|
-| [Demo 1 — Image Overflow](demo-1-image-overflow.html) | A 400px image inside a `1fr` column sets the track minimum to 400px and escapes the container |
-| [Demo 2 — Three Fixes](demo-2-three-fixes.html) | `1fr` (broken), `minmax(0, 1fr)` (fixed), `min-width: 0` (fixed) — same content, three outcomes |
-| [Demo 3 — Nested Grid](demo-3-nested-grid.html) | An image inside an inner grid cascades its minimum up through both grids |
-| [Demo 4 — pre Block](demo-4-pre-block.html) | A `pre` block's longest line sets the track minimum |
+| [Demo 1: Image Overflow](demo-1-image-overflow.html) | A 400px image inside a `1fr` column sets the track minimum to 400px and escapes the container |
+| [Demo 2: Three Fixes](demo-2-three-fixes.html) | `1fr` (broken), `minmax(0, 1fr)` (fixed), `min-width: 0` (fixed) — same content, three outcomes |
+| [Demo 3: Nested Grid](demo-3-nested-grid.html) | An image inside an inner grid cascades its minimum up through both grids |
+| [Demo 4: pre Block](demo-4-pre-block.html) | A `pre` block's longest line sets the track minimum |
 
 ## The Core Bug
 
@@ -53,9 +53,9 @@ open index.html
 
 ## Article
 
-Read the full article on CSS-Tricks — [Why `1fr` Isn't Actually "One Fraction" (And When It Silently Breaks Your Grid)](https://css-tricks.com)
+Read the full article on CSS-Tricks [Why `1fr` Isn't Actually "One Fraction" (And When It Silently Breaks Your Grid)](https://css-tricks.com)
 
 ## Author
 
-**Godstime Aburu** — Frontend Developer & Technical Writer  
+**Godstime Aburu** Frontend Developer & Technical Writer  
 [GitHub](https://github.com/BboyGT)
