@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 3 — Nested Grid Toggle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    padding: 2rem;
+    color: #333;
+  }
+
+  .nav { margin-bottom: 2rem; }
+  .nav a { font-size: 0.85rem; color: #666; text-decoration: none; }
+  .nav a:hover { color: #333; }
+
+  h1 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1.25rem;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .btn:hover { background: #333; }
+
+  .status { font-size: 0.875rem; font-weight: 700; }
+  .status--broken { color: #dc2626; }
+  .status--fixed  { color: #16a34a; }
+
+  .outer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 620px;
+    background: white;
+    outline: 2px solid #fca5a5;
+    transition: outline-color 0.3s;
+  }
+
+  .outer-grid.is-fixed { outline-color: #86efac; }
+
+  .outer-col {
+    padding: 1rem;
+    outline: 1px solid #eee;
+  }
+
+  .outer-col--right { background: #fffbf0; }
+
+  .col-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 0.6rem;
+  }
+
+  .col-body {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .col-body code {
+    background: #eee;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+
+  .inner-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 3px;
+  }
+
+  .inner-col {
+    background: #f0f0f0;
+    padding: 0.4rem;
+    font-size: 0.75rem;
+    color: #666;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  img { display: block; height: auto; }
+
+  .code-display {
+    margin-top: 1.25rem;
+    width: 620px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    font-family: monospace;
+  }
+
+  .c-prop  { color: #9cdcfe; }
+  .c-red   { color: #f44747; }
+  .c-green { color: #b5cea8; }
+  .c-gray  { color: #6a9955; }
+
+  .key-point {
+    margin-top: 1.25rem;
+    width: 620px;
+    background: #fffbeb;
+    border-left: 3px solid #fbbf24;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .key-point strong { color: #92400e; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><a href="index.html">← Back to all demos</a></nav>
+
+<h1>Demo 03 — Nested Grid Toggle</h1>
+<p class="subtitle">A 500px image inside an inner grid cascades its minimum up through both grids. The fix must go on every level — not just the outermost container.</p>
+
+<div class="controls">
+  <button class="btn" id="toggle">Apply Fix</button>
+  <span class="status status--broken" id="status">Currently: broken</span>
+</div>
+
+<div class="outer-grid" id="outerGrid">
+  <div class="outer-col">
+    <p class="col-label">Outer column 1 — inner grid inside</p>
+    <div class="inner-grid" id="innerGrid">
+      <div class="inner-col">
+        <img id="demoImg" src="https://picsum.photos/500/180" alt="" width="500" height="180">
+      </div>
+      <div class="inner-col">Inner 2</div>
+      <div class="inner-col">Inner 3</div>
+    </div>
+  </div>
+  <div class="outer-col outer-col--right">
+    <p class="col-label">Outer column 2</p>
+    <p class="col-body">Should be equal to the left. The 500px image inside the inner grid set a minimum that cascaded up through both <code>1fr</code> tracks to push the outer column wide.</p>
+  </div>
+</div>
+
+<div class="code-display" id="codeDisplay"></div>
+
+<div class="key-point">
+  <strong>Key takeaway:</strong> The fix must go on every grid in the chain. Applying <code>minmax(0, 1fr)</code> only to the outer grid leaves the inner grid's auto minimums intact — and the outer column still grows to contain them.
+</div>
+
+<script>
+  const toggle       = document.getElementById('toggle');
+  const status       = document.getElementById('status');
+  const outerGrid    = document.getElementById('outerGrid');
+  const innerGrid    = document.getElementById('innerGrid');
+  const demoImg      = document.getElementById('demoImg');
+  const codeDisplay  = document.getElementById('codeDisplay');
+
+  let fixed = false;
+
+  demoImg.style.maxWidth = 'none';
+
+  const brokenCode = `.outer-grid {\n  grid-template-columns: 1fr 1fr;\n  /* resolves to minmax(auto, 1fr) — outer column grows\n     to fit whatever the inner grid needs */\n}\n\n.inner-grid {\n  grid-template-columns: 1fr 1fr 1fr;\n  /* 500px image sets a ~500px minimum on the first inner track\n     this cascades up — outer column minimum = ~500px */\n}`;
+
+  const fixedCode = `.outer-grid {\n  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);\n  /* floor removed at the outer level */\n}\n\n.inner-grid {\n  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);\n  /* floor removed at the inner level too\n     the fix must apply at every grid level, not just the outermost */\n}`;
+
+  codeDisplay.textContent = brokenCode;
+
+  toggle.addEventListener('click', () => {
+    fixed = !fixed;
+
+    if (fixed) {
+      outerGrid.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(0, 1fr)';
+      innerGrid.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)';
+      demoImg.style.maxWidth = '100%';
+      outerGrid.classList.add('is-fixed');
+      toggle.textContent = 'Show Bug';
+      status.textContent = 'Currently: fixed';
+      status.className = 'status status--fixed';
+      codeDisplay.textContent = fixedCode;
+    } else {
+      outerGrid.style.gridTemplateColumns = '1fr 1fr';
+      innerGrid.style.gridTemplateColumns = '1fr 1fr 1fr';
+      demoImg.style.maxWidth = 'none';
+      outerGrid.classList.remove('is-fixed');
+      toggle.textContent = 'Apply Fix';
+      status.textContent = 'Currently: broken';
+      status.className = 'status status--broken';
+      codeDisplay.textContent = brokenCode;
+    }
+  });
+</script>
+
+</body>
+</html>

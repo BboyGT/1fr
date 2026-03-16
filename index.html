@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why 1fr Isn't Actually "One Fraction" — Demo Project</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  header {
+    background: #1a1a1a;
+    color: white;
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  header h1 code {
+    background: #333;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.95em;
+    color: #60a5fa;
+  }
+
+  header p {
+    font-size: 0.95rem;
+    color: #aaa;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  header p a {
+    color: #60a5fa;
+    text-decoration: none;
+  }
+
+  header p a:hover { text-decoration: underline; }
+
+  .demos {
+    max-width: 860px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .demo-card {
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .demo-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+
+  .demo-card__number {
+    background: #1a1a1a;
+    color: #60a5fa;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .demo-card__body {
+    padding: 1.25rem;
+  }
+
+  .demo-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: #1a1a1a;
+  }
+
+  .demo-card__title code {
+    background: #f0f0f0;
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #c0392b;
+  }
+
+  .demo-card__desc {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .demo-card__tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .tag--bug {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .tag--fix {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .tag--toggle {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    color: #999;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 2rem;
+  }
+
+  footer a { color: #666; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Why <code>1fr</code> Isn't Actually "One Fraction"</h1>
+  <p>Four demos from the CSS-Tricks article by <a href="https://github.com/BboyGT" target="_blank">Godstime Aburu</a>. Each one isolates a different part of the bug and its fix.</p>
+</header>
+
+<div class="demos">
+
+  <a class="demo-card" href="demo-1-image-overflow.html">
+    <div class="demo-card__number">DEMO 01</div>
+    <div class="demo-card__body">
+      <h2 class="demo-card__title">The Bug — Image Overflow</h2>
+      <p class="demo-card__desc">A 400px image inside a <code>1fr</code> column sets the track minimum to 400px. The container boundary means nothing to it.</p>
+      <span class="demo-card__tag tag--bug">Bug only</span>
+    </div>
+  </a>
+
+  <a class="demo-card" href="demo-2-three-fixes.html">
+    <div class="demo-card__number">DEMO 02</div>
+    <div class="demo-card__body">
+      <h2 class="demo-card__title">Three Fixes Side by Side</h2>
+      <p class="demo-card__desc">Broken <code>1fr</code>, fixed with <code>minmax(0, 1fr)</code>, and fixed with <code>min-width: 0</code> — same content, three different outcomes.</p>
+      <span class="demo-card__tag tag--fix">Fix comparison</span>
+    </div>
+  </a>
+
+  <a class="demo-card" href="demo-3-nested-grid.html">
+    <div class="demo-card__number">DEMO 03</div>
+    <div class="demo-card__body">
+      <h2 class="demo-card__title">Nested Grid Toggle</h2>
+      <p class="demo-card__desc">An image inside an inner grid cascades its minimum up through both grids. The fix must go on every level, not just the outermost container.</p>
+      <span class="demo-card__tag tag--toggle">Toggle</span>
+    </div>
+  </a>
+
+  <a class="demo-card" href="demo-4-pre-block.html">
+    <div class="demo-card__number">DEMO 04</div>
+    <div class="demo-card__body">
+      <h2 class="demo-card__title"><code>pre</code> Block Blowout</h2>
+      <p class="demo-card__desc">A <code>pre</code> block's longest line sets the track minimum. The grid stretches the column to match it, regardless of the container width.</p>
+      <span class="demo-card__tag tag--toggle">Toggle</span>
+    </div>
+  </a>
+
+</div>
+
+<footer>
+  Built by <a href="https://github.com/BboyGT" target="_blank">Godstime Aburu</a> — companion project for the CSS-Tricks article.
+</footer>
+
+</body>
+</html>

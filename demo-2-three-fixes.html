@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 2 — Three Fixes Side by Side</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    padding: 2rem;
+    color: #333;
+  }
+
+  .nav { margin-bottom: 2rem; }
+  .nav a { font-size: 0.85rem; color: #666; text-decoration: none; }
+  .nav a:hover { color: #333; }
+
+  h1 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+  h1 code {
+    background: #f0f0f0;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #c0392b;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  .block { margin-bottom: 2rem; }
+
+  .block-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .block-title code {
+    background: #f0f0f0;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+
+  .title--broken { color: #dc2626; }
+  .title--fixed  { color: #16a34a; }
+
+  .grid {
+    display: grid;
+    width: 500px;
+    background: white;
+  }
+
+  .grid--broken {
+    grid-template-columns: 1fr 1fr;
+    outline: 2px solid #fca5a5;
+  }
+
+  .grid--fixed-track {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    outline: 2px solid #86efac;
+  }
+
+  .grid--fixed-item {
+    grid-template-columns: 1fr 1fr;
+    outline: 2px solid #86efac;
+  }
+
+  .col {
+    padding: 0.75rem;
+    outline: 1px solid #eee;
+  }
+
+  .col--text {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  img { display: block; height: auto; }
+
+  .grid--broken img     { max-width: none; }
+  .grid--fixed-track img { max-width: 100%; }
+  .grid--fixed-item .col--zeroed { min-width: 0; }
+  .grid--fixed-item .col--zeroed img { max-width: 100%; }
+
+  .code-note {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    font-family: monospace;
+    color: #777;
+  }
+
+  .code-note .broken { color: #dc2626; }
+  .code-note .fixed  { color: #16a34a; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><a href="index.html">← Back to all demos</a></nav>
+
+<h1>Demo 02 — Three Fixes Side by Side</h1>
+<p class="subtitle">The same grid. The same image. Three different track definitions. The difference in result is immediate.</p>
+
+<!-- BROKEN -->
+<div class="block">
+  <p class="block-title title--broken">❌ Broken — <code>1fr 1fr</code></p>
+  <div class="grid grid--broken">
+    <div class="col">
+      <img src="https://picsum.photos/400/200" alt="" width="400" height="200">
+    </div>
+    <div class="col col--text">
+      This column should be equal. The image's intrinsic size set a minimum the grid couldn't override.
+    </div>
+  </div>
+  <p class="code-note">grid-template-columns: <span class="broken">1fr 1fr</span>; <span style="color:#999">/* resolves to minmax(auto, 1fr) */</span></p>
+</div>
+
+<!-- FIXED - TRACK -->
+<div class="block">
+  <p class="block-title title--fixed">✅ Fixed — <code>minmax(0, 1fr)</code> on the track</p>
+  <div class="grid grid--fixed-track">
+    <div class="col">
+      <img src="https://picsum.photos/400/200" alt="" width="400" height="200">
+    </div>
+    <div class="col col--text">
+      Minimum floor removed from the track. Both columns are equal. The image scales down to fit.
+    </div>
+  </div>
+  <p class="code-note">grid-template-columns: <span class="fixed">minmax(0, 1fr) minmax(0, 1fr)</span>; <span style="color:#999">/* floor removed */</span></p>
+</div>
+
+<!-- FIXED - ITEM -->
+<div class="block">
+  <p class="block-title title--fixed">✅ Fixed — <code>min-width: 0</code> on the item</p>
+  <div class="grid grid--fixed-item">
+    <div class="col col--zeroed">
+      <img src="https://picsum.photos/400/200" alt="" width="400" height="200">
+    </div>
+    <div class="col col--text">
+      Same result. The fix lives on the item instead of the track. Useful when you don't control the grid definition.
+    </div>
+  </div>
+  <p class="code-note">.grid-item { <span class="fixed">min-width: 0</span>; } <span style="color:#999">/* item minimum reset */</span></p>
+</div>
+
+</body>
+</html>

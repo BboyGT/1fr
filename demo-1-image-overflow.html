@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 1 — The Bug: Image Overflow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    padding: 2rem;
+    color: #333;
+  }
+
+  .nav {
+    margin-bottom: 2rem;
+  }
+
+  .nav a {
+    font-size: 0.85rem;
+    color: #666;
+    text-decoration: none;
+  }
+
+  .nav a:hover { color: #333; }
+
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+
+  h1 code {
+    background: #f0f0f0;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #c0392b;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  /* Demo area */
+  .demo-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #999;
+    margin-bottom: 0.6rem;
+  }
+
+  .intro {
+    font-size: 0.875rem;
+    color: #555;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .intro code {
+    background: #e8e8e8;
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+
+  .stage {
+    position: relative;
+    margin-bottom: 0.5rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 500px;
+    background: white;
+    outline: 2px solid #fca5a5;
+  }
+
+  .col {
+    padding: 0.75rem;
+    outline: 1px solid #eee;
+  }
+
+  .col--text {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .col--text strong {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 0.3rem;
+  }
+
+  img {
+    display: block;
+    max-width: none;
+    height: auto;
+  }
+
+  .boundary-label {
+    font-size: 0.72rem;
+    color: #dc2626;
+    margin-top: 0.4rem;
+    font-weight: 600;
+  }
+
+  .callout {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 560px;
+  }
+
+  .callout-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #444;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .dot--red  { background: #dc2626; }
+  .dot--gray { background: #9ca3af; }
+
+  .explanation {
+    margin-top: 2rem;
+    max-width: 560px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    font-family: monospace;
+  }
+
+  .c-prop  { color: #9cdcfe; }
+  .c-val   { color: #ce9178; }
+  .c-red   { color: #f44747; }
+  .c-green { color: #b5cea8; }
+  .c-gray  { color: #6a9955; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><a href="index.html">← Back to all demos</a></nav>
+
+<h1>Demo 01 — The Bug: Image Overflow</h1>
+<p class="subtitle">A 400px image inside a <code>1fr</code> column. The column ignores the 500px container and grows to fit the image's intrinsic size instead.</p>
+
+<p class="demo-label">Live Demo</p>
+
+<p class="intro">Container is <strong>500px</strong> wide. Both columns are <code>1fr</code>. The image is <strong>400px</strong>.</p>
+
+<div class="stage">
+  <div class="grid">
+    <div class="col col--image">
+      <img src="https://picsum.photos/400/220" alt="" width="400" height="220">
+    </div>
+    <div class="col col--text">
+      <strong>Right column</strong>
+      This column should be equal to the left. It's been squeezed into whatever space remains after the image set its minimum.
+    </div>
+  </div>
+</div>
+
+<p class="boundary-label">↑ Red outline = 500px container boundary. Left column has escaped it.</p>
+
+<div class="callout">
+  <div class="callout-row">
+    <span class="dot dot--red"></span>
+    <span><strong>Left column:</strong> 400px image sets the track minimum to 400px. <code>1fr</code> can't go below it.</span>
+  </div>
+  <div class="callout-row">
+    <span class="dot dot--gray"></span>
+    <span><strong>Right column:</strong> gets whatever is left — 100px. Text wraps on almost every word.</span>
+  </div>
+</div>
+
+<div class="explanation">
+  <span class="c-gray">/* The grid definition */</span><br>
+  .<span class="c-prop">grid</span> {<br>
+  &nbsp;&nbsp;<span class="c-prop">display</span>: <span class="c-val">grid</span>;<br>
+  &nbsp;&nbsp;<span class="c-prop">grid-template-columns</span>: <span class="c-red">1fr 1fr</span>;<br>
+  &nbsp;&nbsp;<span class="c-gray">/* resolves to: minmax(auto, 1fr) minmax(auto, 1fr) */</span><br>
+  &nbsp;&nbsp;<span class="c-gray">/* auto minimum = image's intrinsic width = 400px */</span><br>
+  &nbsp;&nbsp;<span class="c-gray">/* left track minimum: 400px — right track gets the rest */</span><br>
+  }<br><br>
+  <span class="c-gray">/* The fix */</span><br>
+  .<span class="c-prop">grid</span> {<br>
+  &nbsp;&nbsp;<span class="c-prop">grid-template-columns</span>: <span class="c-green">minmax(0, 1fr) minmax(0, 1fr)</span>;<br>
+  &nbsp;&nbsp;<span class="c-gray">/* minimum floor removed — both columns equal */</span><br>
+  }
+</div>
+
+</body>
+</html>

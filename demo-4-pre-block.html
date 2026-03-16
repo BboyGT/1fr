@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 4 — pre Block Blowout</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    padding: 2rem;
+    color: #333;
+  }
+
+  .nav { margin-bottom: 2rem; }
+  .nav a { font-size: 0.85rem; color: #666; text-decoration: none; }
+  .nav a:hover { color: #333; }
+
+  h1 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  .subtitle code {
+    background: #e8e8e8;
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1.25rem;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .btn:hover { background: #333; }
+
+  .status { font-size: 0.875rem; font-weight: 700; }
+  .status--broken { color: #dc2626; }
+  .status--fixed  { color: #16a34a; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 580px;
+    background: white;
+    outline: 2px solid #fca5a5;
+    transition: outline-color 0.3s;
+  }
+
+  .grid.is-fixed { outline-color: #86efac; }
+
+  .col {
+    padding: 1rem;
+    outline: 1px solid #eee;
+  }
+
+  .col-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 0.6rem;
+  }
+
+  .col-label code {
+    background: #eee;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .col--text p {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .col--text code {
+    background: #eee;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 0.85rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .code-display {
+    margin-top: 1.25rem;
+    width: 580px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    font-family: monospace;
+  }
+
+  .key-point {
+    margin-top: 1.25rem;
+    width: 580px;
+    background: #fffbeb;
+    border-left: 3px solid #fbbf24;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .key-point strong { color: #92400e; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><a href="index.html">← Back to all demos</a></nav>
+
+<h1>Demo 04 — <code>pre</code> Block Blowout</h1>
+<p class="subtitle">A <code>pre</code> block doesn't wrap. Its <code>min-content</code> size is the width of its longest line. That becomes the track minimum — and the grid stretches to match it.</p>
+
+<div class="controls">
+  <button class="btn" id="toggle">Apply Fix</button>
+  <span class="status status--broken" id="status">Currently: broken</span>
+</div>
+
+<div class="grid" id="grid">
+  <div class="col col--code">
+    <p class="col-label">Column with a <code>pre</code> block</p>
+    <pre><code>function calculateFreeSpace(containerWidth, tracks) {
+  const minimums = tracks.map(t => resolveMinContent(t));
+  const totalMin = minimums.reduce((sum, min) => sum + min, 0);
+  const freeSpace = containerWidth - totalMin;
+  return Math.max(0, freeSpace);
+}</code></pre>
+  </div>
+  <div class="col col--text">
+    <p class="col-label">Column that should be equal</p>
+    <p>The <code>pre</code> block's longest line sets the track minimum. The grid stretches the left column to match it, regardless of the container width.</p>
+  </div>
+</div>
+
+<div class="code-display" id="codeDisplay"></div>
+
+<div class="key-point">
+  <strong>Key takeaway:</strong> <code>pre</code> blocks, long URLs, and anything with <code>white-space: nowrap</code> all have large intrinsic minimum sizes. They trigger the same <code>1fr</code> behaviour as oversized images. The fix is identical — <code>minmax(0, 1fr)</code> on the track.
+</div>
+
+<script>
+  const toggle      = document.getElementById('toggle');
+  const status      = document.getElementById('status');
+  const grid        = document.getElementById('grid');
+  const codeDisplay = document.getElementById('codeDisplay');
+
+  let fixed = false;
+
+  const brokenCode = `.grid {\n  grid-template-columns: 1fr 1fr;\n  /* resolves to minmax(auto, 1fr) minmax(auto, 1fr) */\n  /* pre block's longest line sets the minimum */\n  /* left column stretches to match it */\n}`;
+
+  const fixedCode = `.grid {\n  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);\n  /* minimum floor removed */\n  /* pre block is allowed to be smaller than its content */\n  /* overflow handled by the pre's own horizontal scroll */\n}`;
+
+  codeDisplay.textContent = brokenCode;
+
+  toggle.addEventListener('click', () => {
+    fixed = !fixed;
+
+    if (fixed) {
+      grid.style.gridTemplateColumns = 'minmax(0, 1fr) minmax(0, 1fr)';
+      grid.classList.add('is-fixed');
+      toggle.textContent = 'Show Bug';
+      status.textContent = 'Currently: fixed';
+      status.className = 'status status--fixed';
+      codeDisplay.textContent = fixedCode;
+    } else {
+      grid.style.gridTemplateColumns = '1fr 1fr';
+      grid.classList.remove('is-fixed');
+      toggle.textContent = 'Apply Fix';
+      status.textContent = 'Currently: broken';
+      status.className = 'status status--broken';
+      codeDisplay.textContent = brokenCode;
+    }
+  });
+</script>
+
+</body>
+</html>
